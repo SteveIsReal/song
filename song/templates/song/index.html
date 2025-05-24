@@ -1,0 +1,21 @@
+<html>
+	<body>
+		{% if author_list %}
+		<ul>
+			{% for author in author_list %}
+			<li><a href='/song/author/{{author.id}}'>{{author.name}}</a></li>
+			<ul>
+				{% for song in author.song_set.all %}
+				<li><a href='/song/song/?song_id={{song.id}}'>{{song.name}}</a></li>
+
+				{% endfor %}
+			</ul>
+			{% endfor %}
+		</ul>
+		{% else %}
+			<p>No author in database</p>
+		{% endif %}
+
+	</body>
+</html>
+	
