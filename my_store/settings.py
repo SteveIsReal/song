@@ -28,6 +28,10 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = 'media_folder'
+
+
 # Application definition
 
 INSTALLED_APPS = [

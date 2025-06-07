@@ -24,6 +24,7 @@ def index(request):
     return render(request, 'song/index.html', context)
 
 def author(request, author_id):
+    '''
     author = Author.objects.filter(id=author_id).first()
     if author is None:
         content = f'Error! id : {author_id} not found'
@@ -32,8 +33,16 @@ def author(request, author_id):
         content += f'Birth Date {author.birth_date.strftime("%d/%m/%Y")}</br>'
 
     return HttpResponse(content)
+    '''
+
+    content = {
+            'author' : Author.objects.filter(id=author_id).first()
+        }
+    
+    return render(request, 'song/author.html', content)
 
 def song(request):
+    '''
     song_id = request.GET.get('song_id')
     song = Song.objects.filter(id=song_id).first()
     if song is None:
@@ -41,4 +50,8 @@ def song(request):
     else:
         content = f'song name : {song.name}'
     return HttpResponse(content)
-
+    '''
+    content = {
+            'song':Song.objects.filter(id=request.GET.get('song_id')).first()
+        }
+    return render(request, 'song/song.html',content)
