@@ -1,6 +1,7 @@
 from song.models import Author, Song
 from django.http import HttpResponse
 from django.shortcuts import render
+import json
 
 
 def index(request):
@@ -55,3 +56,42 @@ def song(request):
             'song':Song.objects.filter(id=request.GET.get('song_id')).first()
         }
     return render(request, 'song/song.html',content)
+
+def author_list(request):
+    authors = Author.objects.all()
+    response_data = list()
+    print(request)
+
+    for author in authors:
+        author_data = dict()
+        author_data['name'] = author.name
+        author_data['birth_date'] = author.birth_date.strftime('%d-%m-%y')
+        author_data['image'] = author.image.url
+        response_data.append(author_data)
+    return HttpResponse(json.dumps(response_data))
+
+def song_list(request):
+    get_request = request.GET.get('author_id')
+    if get_request != None:
+        songs = Song.objects.filter(author__id=get_request) if len(get_request) > 0 else ''
+        reponse_data = []
+
+        for song in songs:
+            song_data = {}
+            song_data['name'] = song.name
+            reponse_data.append(song_data)
+
+        return HttpResponse(json.dumps(reponse_data))
+
+    else:
+        return HttpResponse("Nope", status=400)
+
+def song_detail(request, song_id):
+    song = Song.objects.filter(id=song_id).first()
+
+    song_data = {"name" : song.name,
+                 "author_name" : song.author.name
+                }
+
+    return HttpResponse(json.dumps(song_data), status=200) if song else HttpResponse('404', status=404)
+    
