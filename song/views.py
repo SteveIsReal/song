@@ -86,6 +86,19 @@ def song_list(request):
     else:
         return HttpResponse("Nope", status=400)
 
+def author_with_song_list(request):
+    authors = Author.objects.all()
+    response_data = list()
+
+    for author in authors:
+        author_data = dict()
+        author_data['name'] = author.name
+        author_data['birth_date'] = author.birth_date.strftime('%d-%m-%y')
+        author_data['image'] = author.image.url
+        author_data['song_names'] = ", ".join([s.name for s in author.song_set.all()])
+        response_data.append(author_data)
+    return HttpResponse(json.dumps(response_data)) 
+
 def song_detail(request, song_id):
     song = Song.objects.filter(id=song_id).first()
 
