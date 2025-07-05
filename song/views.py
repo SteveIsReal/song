@@ -2,6 +2,7 @@ from song.models import Author, Song
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 def index(request):
@@ -73,3 +74,34 @@ def author_list(request):
         response_data.append(author_data)
 
     return Response(status=status.HTTP_200_OK, data=response_data)
+
+class AuthorList(APIView):
+    def __create_author_list(self):
+        authors = Author.objects.all()
+        author_list = list()
+        
+        for author in authors:
+            author_data = dict()
+            author_data['name'] = author.name
+            author_data['birth_day'] = author.birth_date.strftime("%d-%m-%Y")
+            author_list.append(author_data)
+        return author_list
+
+    def __create_response_list(self,request):
+        response_data = list()
+        response_data.append({
+            'method':request.method,
+            'data':request.data
+        })
+        return response_data
+
+    def post(self, request):
+        response_data = self.__create_response_list(request)
+        response_data.append(self.__create_author_list())
+        return Response(status=status.HTTP_200_OK, data=response_data)
+
+    def get(self, request):
+        get_data = self.__create_response_list(request)
+        get_data.append(self.__create_author_list())
+        return Response(status=status.HTTP_200_OK, data=get_data)
+
