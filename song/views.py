@@ -1,6 +1,7 @@
 from song.models import Author, Song
-from django.http import HttpResponse
-from django.shortcuts import render
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 def index(request):
@@ -55,3 +56,20 @@ def song(request):
             'song':Song.objects.filter(id=request.GET.get('song_id')).first()
         }
     return render(request, 'song/song.html',content)
+
+@api_view(['POST'])
+def author_list(request):
+    authors = Author.objects.all()
+    response_data = list()
+    response_data.append({
+        'method': request.method,
+        'data': request.data
+    })
+
+    for author in authors:
+        author_data = dict()
+        author_data['name'] = author.name
+        author_data['birth_day'] = author.birth_date.strftime("%d-%m-%Y")
+        response_data.append(author_data)
+
+    return Response(status=status.HTTP_200_OK, data=response_data)
