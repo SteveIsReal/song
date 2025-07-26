@@ -100,11 +100,6 @@ class AuthorList(APIView):
         get_data.append(self.__create_author_list())
         return Response(status=status.HTTP_200_OK, data=get_data)
 
-        author_data['birth_date'] = author.birth_date.strftime('%d-%m-%y')
-        author_data['image'] = author.image.url
-        response_data.append(author_data)
-        return HttpResponse(json.dumps(response_data))
-
 def song_list(request):
     get_request = request.GET.get('author_id')
     if get_request != None:
