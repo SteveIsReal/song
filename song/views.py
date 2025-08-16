@@ -3,6 +3,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import generics, viewsets
+from song.serializer import AuthorSerializer, SongSerializer
 from django.http import HttpResponse
 from django.shortcuts import render
 import json
@@ -70,35 +72,9 @@ def author_list(request):
         'data': request.data
     })
 
-class AuthorList(APIView):
-    def __create_author_list(self):
-        authors = Author.objects.all()
-        author_list = list()
-        
-        for author in authors:
-            author_data = dict()
-            author_data['name'] = author.name
-            author_data['birth_day'] = author.birth_date.strftime("%d-%m-%Y")
-            author_list.append(author_data)
-        return author_list
-
-    def __create_response_list(self,request):
-        response_data = list()
-        response_data.append({
-            'method':request.method,
-            'data':request.data
-        })
-        return response_data
-
-    def post(self, request):
-        response_data = self.__create_response_list(request)
-        response_data.append(self.__create_author_list())
-        return Response(status=status.HTTP_200_OK, data=response_data)
-
-    def get(self, request):
-        get_data = self.__create_response_list(request)
-        get_data.append(self.__create_author_list())
-        return Response(status=status.HTTP_200_OK, data=get_data)
+class AuthorList(generics.ListAPIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
 
 def song_list(request):
     get_request = request.GET.get('author_id')
@@ -150,4 +126,44 @@ def song_detail(request, song_id):
                 }
 
     return HttpResponse(json.dumps(song_data), status=200) if song else HttpResponse('404', status=404)
+
+class SongListGeneric(generics.ListAPIView):
+    serializer_class = SongSerializer
+
+    def get_queryset(self):
+        author_id = self.request.query_params.get('author_id', None)
+        return Song.objects.filter(author=author_id)
+
+class SongList4(generics.ListAPIView):
+    serializer_class = SongSerializer
+
+    def get_queryset(self):
+        author_id = self.kwargs['author_id']
+        return Song.objects.filter(author=author_id)
+
+class AuthorDetail(generics.RetrieveAPIView):
+    serializer_class = AuthorSerializer
+    queryset = Author.objects.all()
+    lookup_field = 'id'
+
+class SongDetail(generics.RetrieveAPIView):
+    serializer_class = SongSerializer
+    queryset = Song.objects.all()
+    lookup_field = 'name'
     
+class AuthorCreate(generics.CreateAPIView):
+    serializer_class = AuthorSerializer
+    queryset = Author.objects.all()
+    
+class AuthorUpdate(generics.UpdateAPIView):
+    serializer_class = AuthorSerializer
+    queryset = Author.objects.all()
+    lookup_field = 'id'
+
+class AuthorViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = AuthorSerializer
+    queryset = Author.objects.all()
+
+class SongViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SongSerializer
+    queryset = Song.objects.all()

@@ -4,7 +4,7 @@ from django.db import models
 class Author(models.Model):
     name = models.CharField(max_length=100)
     birth_date = models.DateField()
-    image = models.ImageField(upload_to='media/images', null=True)
+    image = models.ImageField(upload_to='media/images', null=True, blank=True)
 
     @property
     def display_birth_date(self):
