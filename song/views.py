@@ -3,10 +3,16 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import generics, viewsets
+from rest_framework import generics
+
+from rest_framework import viewsets
+
 from song.serializer import AuthorSerializer, SongSerializer
 from django.http import HttpResponse
 from django.shortcuts import render
+
+from song.filters import AuthorFilter
+
 import json
 
 
@@ -116,6 +122,8 @@ class AuthorWithSongList(APIView):
             author_list.append(author_data)
 
         return Response(status=status.HTTP_200_OK, data=author_list)
+    def post(self, request):
+        return json.dumps("Hello")
         
 
 def song_detail(request, song_id):
@@ -160,10 +168,13 @@ class AuthorUpdate(generics.UpdateAPIView):
     queryset = Author.objects.all()
     lookup_field = 'id'
 
-class AuthorViewSet(viewsets.ReadOnlyModelViewSet):
+class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = AuthorSerializer
     queryset = Author.objects.all()
+    filterset_class = AuthorFilter
+
 
 class SongViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SongSerializer
     queryset = Song.objects.all()
+

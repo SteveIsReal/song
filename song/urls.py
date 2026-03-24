@@ -1,6 +1,7 @@
 from song import views
 from rest_framework.routers import DefaultRouter
 from django.urls import path, include
+from rest_framework.authtoken.views import obtain_auth_token
 
 router = DefaultRouter()
 router.register('author', views.AuthorViewSet)
@@ -8,7 +9,7 @@ router.register('song', views.SongViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    #path('author/<int:author_id>', views.author),
+    #path('author/id>', views.author),
     path('song/', include(router.urls)),
     path('author_list2/', views.AuthorList.as_view()),
     path('author_list/', views.author_list, name='author_list'),
@@ -21,6 +22,7 @@ urlpatterns = [
     path('author_detail/<int:id>', views.AuthorDetail.as_view()),
     path('author_update/<int:id>', views.AuthorUpdate.as_view()),
     path('song_detail2/<str:name>', views.SongDetail.as_view()),
-    path('author_create/', views.AuthorCreate.as_view())
+    path('author_create/', views.AuthorCreate.as_view()),
+    path('login/', obtain_auth_token)
 ]
 

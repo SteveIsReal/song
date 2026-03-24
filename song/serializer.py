@@ -5,6 +5,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     birth_date = serializers.DateField(format='%d/%m/%Y')
     birth_date_2 = serializers.DateField(source="birth_date", format='%Y-%m-%d', read_only=True)
 
+
     length_of_song = serializers.SerializerMethodField()
     songs = serializers.SerializerMethodField()
 
@@ -16,7 +17,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         #for i in obj.song_set.all():
         #    songs.append(i.name)
         #return songs
-        return ", ".join([s.name for s in obj.song_set.all()])
+        return ", ".join([f"{s.name} ({s.price})" for s in obj.song_set.all()])
 
     class Meta:
         model = Author
